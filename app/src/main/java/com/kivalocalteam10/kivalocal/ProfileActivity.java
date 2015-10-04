@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
@@ -66,6 +69,7 @@ public class ProfileActivity extends ActionBarActivity {
     private TextView tV1;
     private EditText changeText;
     private int selections;
+    private ShareActionProvider mShareActionProvider;
 
 
     @Override
@@ -228,5 +232,28 @@ public class ProfileActivity extends ActionBarActivity {
         // Stop service when done
         stopService(new Intent(this, PayPalService.class));
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu resource file.
+        getMenuInflater().inflate(R.menu.menu_profile, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+
+        // Fetch and store ShareActionProvider
+        //mShareActionProvider = (ShareActionProvider) item.getActionProvider();
+
+        // Return true to display menu
+        return true;
+    }
+
+    // Call to update the share intent
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            //shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, getIntent().getStringExtra("url"));
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
     }
 }
