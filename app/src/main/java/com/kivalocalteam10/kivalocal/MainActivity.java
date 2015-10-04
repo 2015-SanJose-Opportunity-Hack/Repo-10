@@ -11,9 +11,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBuffer;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.SphericalUtil;
 
 
 public class MainActivity extends ActionBarActivity
@@ -54,7 +60,43 @@ public class MainActivity extends ActionBarActivity
     public void onConnected(Bundle connectionHint) {
         // Connected to Google Play services!
         // The good stuff goes here
-        Log.d("Corey","onCOnnected");
+        Log.d("Corey", "onCOnnected");
+        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+                .getCurrentPlace(mGoogleApiClient, null);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+            @Override
+            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+                LatLng point = likelyPlaces.get(0).getPlace().getLatLng();
+                likelyPlaces.release();
+                LatLngBounds bounds = convertCenterAndRadiusToBounds(point, 5);
+                String query = "Pay";
+                AutocompleteFilter autocompleteFilter;
+                PendingResult<AutocompletePredictionBuffer> result =
+                        Places.GeoDataApi.getAutocompletePredictions(mGoogleApiClient, query,
+                                bounds, null);
+                result.setResultCallback(new ResultCallback<AutocompletePredictionBuffer>() {
+                    @Override
+                    public void onResult(AutocompletePredictionBuffer autocompletePredictions) {
+                        for (AutocompletePrediction prediction : autocompletePredictions) {
+                            Log.d("Corey", prediction.toString());
+                            Log.d("Corey", prediction.getDescription());
+                        }
+                    }
+                });
+            }
+        });
+
+
+
+
+    }
+    public LatLngBounds convertCenterAndRadiusToBounds(LatLng center, double radius) {
+        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+        return new LatLngBounds(southwest, northeast);
+    }
+
+    private void currentPlaces() {
         PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
                 .getCurrentPlace(mGoogleApiClient, null);
         result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
