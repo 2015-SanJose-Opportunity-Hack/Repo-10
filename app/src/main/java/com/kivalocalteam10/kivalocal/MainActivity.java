@@ -3,6 +3,7 @@ package com.kivalocalteam10.kivalocal;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -95,15 +96,17 @@ public class MainActivity extends ActionBarActivity
     private void ConfigureMap(GoogleMap map, List<ParseObject> parseObjects) {
 
         LatLng testLocation = new LatLng(37.3770091, -121.9227009);
+Log.d(">>>>>>>>>>>>>>>>>>", parseObjects.size()+"");
 
         map.setMyLocationEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(testLocation, 13));
 
         for (ParseObject o :parseObjects) {
             ParseGeoPoint point = o.getParseGeoPoint("Coordinate");
-
+            if(point == null) continue;
             double x = point.getLatitude();
             double y = point.getLongitude();
+            Log.d(">>>>>>>>>>>>>>>>>>", String.format("%s(%f, %f)", o.getString("Name"), x, y));
             LatLng xyLocation = new LatLng(x,y);
             map.addMarker(new MarkerOptions()
                     .title(o.getString("Name"))
