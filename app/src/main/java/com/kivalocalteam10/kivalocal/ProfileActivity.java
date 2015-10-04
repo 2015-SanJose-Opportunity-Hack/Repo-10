@@ -1,8 +1,10 @@
 package com.kivalocalteam10.kivalocal;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,7 +26,7 @@ import org.json.JSONException;
 import java.math.BigDecimal;
 //import com.tag.paypalblogdemo.R;
 
-public class ProfileActivity extends Activity {
+public class ProfileActivity extends ActionBarActivity {
 
     // private static final String TAG = "paymentdemoblog";
     /**
@@ -75,7 +77,8 @@ public class ProfileActivity extends Activity {
         wv = (WebView)this.findViewById(R.id.webView);
         wv.getSettings().setJavaScriptEnabled(true);
 
-        wv.loadUrl("https://zip.kiva.org/loans/16510");
+        wv.loadUrl(getIntent().getStringExtra("url"));
+        //https://zip.kiva.org/loans/16510"
           /*  wv.loadUrl("https://zip.kiva.org/loans/16725");
             wv.loadUrl("https://zip.kiva.org/loans/16662");
             wv.loadUrl("https://zip.kiva.org/loans/16022");
@@ -106,16 +109,23 @@ public class ProfileActivity extends Activity {
                 String tvVar;
                 tvVar = tV1.getText().toString();
 
+                if(tvVar == null || tvVar.trim().isEmpty())
+                    Toast.makeText(ProfileActivity.this, "Please input some amount!",
+                            Toast.LENGTH_SHORT).show();
                 //tryParseInt(tvVar);
 
-                thingToBuy = new PayPalPayment(new BigDecimal(tvVar), "USD",
-                        "Loan", PayPalPayment.PAYMENT_INTENT_SALE);
-                Intent intent = new Intent(ProfileActivity.this,
-                        PaymentActivity.class);
+                try {
+                    thingToBuy = new PayPalPayment(new BigDecimal(tvVar), "USD",
+                            "Loan", PayPalPayment.PAYMENT_INTENT_SALE);
+                    Intent intent = new Intent(ProfileActivity.this,
+                            PaymentActivity.class);
 
-                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
+                    intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
 
-                startActivityForResult(intent, REQUEST_CODE_PAYMENT);
+                    startActivityForResult(intent, REQUEST_CODE_PAYMENT);
+                }catch(Exception e) { //TODO
+                    Log.e(">>>", e.toString());
+                }
             }
         });
 
