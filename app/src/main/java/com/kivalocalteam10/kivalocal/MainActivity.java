@@ -18,6 +18,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
@@ -95,7 +96,7 @@ public class MainActivity extends ActionBarActivity
 
     private void ConfigureMap(GoogleMap map, List<ParseObject> parseObjects) {
 
-        LatLng testLocation = new LatLng(37.3770091, -121.9227009);
+        LatLng testLocation = new LatLng(37.80234, -122.40294);
 Log.d(">>>>>>>>>>>>>>>>>>", parseObjects.size()+"");
 
         map.setMyLocationEnabled(true);
@@ -110,7 +111,8 @@ Log.d(">>>>>>>>>>>>>>>>>>", parseObjects.size()+"");
             LatLng xyLocation = new LatLng(x,y);
             map.addMarker(new MarkerOptions()
                     .title(o.getString("Name"))
-                    .snippet("")
+                    .snippet(o.getString("Address"))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.kiva3))
                     .position(xyLocation));
         }
 
