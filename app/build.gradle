@@ -25,4 +25,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.google.maps.android:android-maps-utils:0.3.4'
     compile 'com.parse:parse-android:1.10.2'
+    // Module dependency on ParseUI libraries sources
+    //compile project(':ParseUI-Login')
+    compile project(':ParseUI-Widget')
 }

@@ -1,15 +1,17 @@
 package com.kivalocalteam10.kivalocal;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 
-import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
+import com.parse.ParseQueryAdapter;
 
 import java.util.List;
 
@@ -23,18 +25,14 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("TestObject");
-        //query.whereEqualTo("playerName", "Dan Stemkoski");
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> scoreList, ParseException e) {
-                if (e == null) {
-                    Log.d("score", "Retrieved " + scoreList.size() + " scores");
-                    mBusinessData = scoreList;
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                }
-            }
-        });
+        // Initialize a ParseQueryAdapter
+        BusinessAdapter adapter = new BusinessAdapter(this, "TestObject");
+// Custom ParseQueryAdapter, for all ParseQueryAdapter setting please check our doc
+        adapter.setTextKey("Name");
+        //adapter.addOnQueryLoadListener();
+        //adapter.setImageKey("photo");
+        ListView listView = (ListView) findViewById(R.id.result_list_view);
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -57,5 +55,29 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+}
+class BusinessAdapter extends ParseQueryAdapter<ParseObject> {
+
+    public BusinessAdapter(Context context, String className) {
+        super(context, className);
+    }
+
+    @Override
+    public View getItemView(ParseObject object, View v, ViewGroup parent) {
+        if (v == null) {
+            v = View.inflate(getContext(), R.layout.list_item, null);
+        }
+
+        // Take advantage of ParseQueryAdapter's getItemView logic for
+        // populating the main TextView/ImageView.
+        // The IDs in your custom layout must match what ParseQueryAdapter expects
+        // if it will be populating a TextView or ImageView for you.
+        super.getItemView(object, v, parent);
+
+        // Do additional configuration before returning the View.
+        TextView addressView = (TextView) v.findViewById(R.id.address);
+        addressView.setText(object.getString("Address"));
+        return v;
     }
 }
