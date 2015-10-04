@@ -9,7 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#72B53E">
+        android:paddingLeft="4dp"
+        android:background="#72B53E"
+        >
         <EditText
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -18,6 +20,7 @@
             android:id="@+id/search_edit_text"
             android:background="#FFFFFF"
             android:textSize="24sp"
+            android:layout_gravity="center_vertical"
             />
         <Button
             android:layout_width="wrap_content"
