@@ -85,7 +85,7 @@ public class MainActivity extends ActionBarActivity
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Switch to List View", LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Switch to List View", LENGTH_SHORT).show();
                 if(contentType != ContentType.LIST) {
                     contentType = ContentType.LIST;
                     updateContentView(createQuery(text.getText().toString()));
@@ -97,7 +97,7 @@ public class MainActivity extends ActionBarActivity
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Switch to Map View", LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Switch to Map View", LENGTH_SHORT).show();
                 if (contentType != ContentType.MAP) {
                     contentType = ContentType.MAP;
 
@@ -107,28 +107,6 @@ public class MainActivity extends ActionBarActivity
                 }
             }
         });
-
-
-
-        /*
-        public voi
-            @Override
-            public void onInfoWindowClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
-            }
-        });
-        }
-
-        /*
-        public voi
-            @Override
-            public void onInfoWindowClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
-            }
-
-         */
 
 
     }
@@ -150,7 +128,8 @@ public class MainActivity extends ActionBarActivity
             LatLng xyLocation = new LatLng(x,y);
             map.addMarker(new MarkerOptions()
                     .title(o.getString("Name"))
-                    .snippet(o.getString("Address"))
+                    .snippet(o.getString("Address")
+                            + "\r\n" + o.getString("webSites"))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.kiva3))
                     .position(xyLocation));
         }
@@ -158,9 +137,12 @@ public class MainActivity extends ActionBarActivity
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Toast.makeText(MainActivity.this, "Switch to Map View", LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
+                //get url from marker
+                try {
+                    String url = marker.getSnippet().split("\r\n")[1];
+                    goToProfile(url);
+                }
+                catch (Exception e){}
             }
         });
 
