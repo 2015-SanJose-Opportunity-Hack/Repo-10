@@ -46,6 +46,12 @@ public class MainActivity extends ActionBarActivity
     enum ContentType { LIST, MAP };
     List<ParseObject> mBusinesses;
 
+    public void goToProfile(String url) {
+        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+        intent.putExtra("url", url);
+        startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +62,8 @@ public class MainActivity extends ActionBarActivity
         listContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
+                String url = (String)view.getTag(R.id.url_key);
+                goToProfile(url);
             }
         });
         mapContent = (ViewGroup)findViewById(R.id.result_map_view);
@@ -233,6 +239,8 @@ class BusinessAdapter extends ParseQueryAdapter<ParseObject> {
 
         ImageView imageView = (ImageView)v.findViewById(R.id.icon);
         Picasso.with(v.getContext()).load(object.getString("Image")).into(imageView);
+
+        v.setTag(R.id.url_key, object.getString("webSites"));
 
         return v;
     }
