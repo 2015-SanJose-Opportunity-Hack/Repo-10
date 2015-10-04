@@ -13,8 +13,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
@@ -24,13 +31,15 @@ import java.util.List;
 import static android.widget.Toast.LENGTH_SHORT;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity
+        implements OnMapReadyCallback {
 
     List<ParseObject> mBusinessData;
     ViewGroup listContent;
     ViewGroup mapContent;
     ContentType contentType = ContentType.LIST;
     enum ContentType { LIST, MAP };
+    List<ParseObject> mBusinesses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +78,47 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "Switch to Map View", LENGTH_SHORT).show();
-                if(contentType != ContentType.MAP) {
+                if (contentType != ContentType.MAP) {
                     contentType = ContentType.MAP;
+
                     updateContentView(createQuery(text.getText().toString()));
+
+                    //
                 }
             }
         });
+
+
+
     }
+
+    private void ConfigureMap(GoogleMap map, List<ParseObject> parseObjects) {
+
+        LatLng testLocation = new LatLng(37.3770091, -121.9227009);
+
+        map.setMyLocationEnabled(true);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(testLocation, 13));
+
+        for (ParseObject o :parseObjects) {
+            ParseGeoPoint point = o.getParseGeoPoint("Coordinate");
+
+            double x = point.getLatitude();
+            double y = point.getLongitude();
+            LatLng xyLocation = new LatLng(x,y);
+            map.addMarker(new MarkerOptions()
+                    .title(o.getString("Name"))
+                    .snippet("")
+                    .position(xyLocation));
+        }
+
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map){
+        ConfigureMap(map, mBusinesses);
+    }
+
 
     private ParseQuery createQuery(final String keyword) {
         ParseQuery query = new ParseQuery("TestObject");
@@ -89,13 +132,23 @@ public class MainActivity extends ActionBarActivity {
             listContent.setVisibility(View.VISIBLE);
             mapContent.setVisibility(View.GONE);
         } else {
-            query.findInBackground(new FindCallback() {
+            query.findInBackground(new FindCallback<ParseObject>( ) {
+
                 @Override
-                public void done(Object objects, Throwable t) {}
-                @Override
-                public void done(List objects, ParseException e) {
+                public void done(List<ParseObject>  objects, ParseException e) {
                     //TODO: add map code here
+                    //create map fragment
+                    MapFragment mapFragment = (MapFragment) getFragmentManager()
+                            .findFragmentById(R.id.result_map_view);
+
+                    mapFragment.getMapAsync(MainActivity.this);
+                    mBusinesses = objects;
+
                 }
+
+
+
+
             });
             listContent.setVisibility(View.GONE);
             mapContent.setVisibility(View.VISIBLE);
