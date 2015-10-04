@@ -1,6 +1,7 @@
 package com.kivalocalteam10.kivalocal;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -8,8 +9,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +29,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -36,7 +40,7 @@ public class MainActivity extends ActionBarActivity
         implements OnMapReadyCallback {
 
     List<ParseObject> mBusinessData;
-    ViewGroup listContent;
+    ListView listContent;
     ViewGroup mapContent;
     ContentType contentType = ContentType.LIST;
     enum ContentType { LIST, MAP };
@@ -48,7 +52,14 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         final EditText text = (EditText)findViewById(R.id.search_edit_text);
-        listContent = (ViewGroup)findViewById(R.id.result_list_view);
+        listContent = (ListView)findViewById(R.id.result_list_view);
+        listContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
         mapContent = (ViewGroup)findViewById(R.id.result_map_view);
 
         updateContentView(createQuery(""));
@@ -219,6 +230,10 @@ class BusinessAdapter extends ParseQueryAdapter<ParseObject> {
         // Do additional configuration before returning the View.
         TextView addressView = (TextView) v.findViewById(R.id.address);
         addressView.setText(object.getString("Address"));
+
+        ImageView imageView = (ImageView)v.findViewById(R.id.icon);
+        Picasso.with(v.getContext()).load(object.getString("Image")).into(imageView);
+
         return v;
     }
 }
