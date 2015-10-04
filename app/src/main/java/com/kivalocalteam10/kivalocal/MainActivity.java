@@ -7,10 +7,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
 
 import java.util.List;
@@ -25,8 +28,29 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        searchNearbyPlaces("");
+
+        Button b = (Button)findViewById(R.id.search_button);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText text = (EditText)findViewById(R.id.search_edit_text);
+                searchNearbyPlaces(text.getText().toString());
+            }
+        });
+    }
+
+    private void searchNearbyPlaces(final String keyword) {
         // Initialize a ParseQueryAdapter
-        BusinessAdapter adapter = new BusinessAdapter(this, "TestObject");
+        BusinessAdapter adapter = new BusinessAdapter(this,
+                new ParseQueryAdapter.QueryFactory<ParseObject>() {
+                    public ParseQuery<ParseObject> create() {
+                        // Here we can configure a ParseQuery to our heart's desire.
+                        ParseQuery query = new ParseQuery("TestObject");
+                        query.whereContains("Name", keyword);
+                        return query;
+                    }
+                });
 // Custom ParseQueryAdapter, for all ParseQueryAdapter setting please check our doc
         adapter.setTextKey("Name");
         //adapter.addOnQueryLoadListener();
@@ -59,8 +83,8 @@ public class MainActivity extends ActionBarActivity {
 }
 class BusinessAdapter extends ParseQueryAdapter<ParseObject> {
 
-    public BusinessAdapter(Context context, String className) {
-        super(context, className);
+    public BusinessAdapter(Context context, QueryFactory<ParseObject> queryFactory) {
+        super(context, queryFactory);
     }
 
     @Override
