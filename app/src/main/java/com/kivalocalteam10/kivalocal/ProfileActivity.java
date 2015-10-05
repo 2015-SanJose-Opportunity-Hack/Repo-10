@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -80,6 +81,9 @@ public class ProfileActivity extends ActionBarActivity {
         //set the web page view variable
         wv = (WebView)this.findViewById(R.id.webView);
         wv.getSettings().setJavaScriptEnabled(true);
+
+        wv.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        wv.getSettings().setBuiltInZoomControls(true);
 
         wv.loadUrl(getIntent().getStringExtra("url"));
         //https://zip.kiva.org/loans/16510"
